@@ -16,9 +16,14 @@ const readData = () => {
 };
 
 const writeData = (data) => {
-  fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
+  try {
+    const dataPath = path.join(__dirname, "data.json");
+    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+  } catch (error) {
+    console.error("Error al escribir el archivo:", error);
+    throw error; // Lanza el error para que se maneje en la llamada
+  }
 };
-
 // Rutas CRUD
 app.get("/items", (req, res) => {
   try {
