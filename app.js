@@ -31,13 +31,11 @@ app.get("/items", (req, res) => {
   const query = "SELECT * FROM Productos";
 
   connection.query(query, (err, results) => {
-    if (err) {
-      console.error("Error al obtener los items:", err);
-      return res
-        .status(500)
-        .json({ message: "Ocurrió un error al obtener los items.", text: err });
+    try {
+      res.status(200).json(results);
+    } catch (error) {
+      console.log(error);
     }
-    res.status(200).json(results);
   });
 });
 
