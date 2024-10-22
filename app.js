@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // Simulando la lectura y escritura de un archivo
-let data = JSON.parse(process.env.DATA || "{}"); // Lee desde una variable de entorno
+let data = JSON.parse(process.env.DATA || "[]"); // Lee desde una variable de entorno
 
 // Rutas CRUD
 app.get("/items", (req, res) => {
