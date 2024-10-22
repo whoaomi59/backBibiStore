@@ -34,7 +34,12 @@ app.get("/items", (req, res) => {
     try {
       res.status(200).json(results);
     } catch (error) {
-      console.log(error);
+      return res
+        .status(500)
+        .json({
+          message: "Ocurrió un error al obtener los items.",
+          text: error,
+        });
     }
   });
 });
