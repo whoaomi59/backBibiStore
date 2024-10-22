@@ -32,35 +32,53 @@ app.get("/items", (req, res) => {
 });
 
 app.post("/items", (req, res) => {
-  const data = readData();
-  const newItem = { id: Date.now(), ...req.body };
-  data.push(newItem);
-  writeData(data);
-  res.status(201).json(newItem);
+  try {
+    const data = readData();
+    const newItem = { id: Date.now(), ...req.body };
+    data.push(newItem);
+    writeData(data);
+    res.status(201).json(newItem);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Ocurrió un error al obtener los items.", text: error });
+  }
 });
 
 app.put("/items/:id", (req, res) => {
-  const data = readData();
-  const itemId = parseInt(req.params.id);
-  const updatedItem = { id: itemId, ...req.body };
+  try {
+    const data = readData();
+    const itemId = parseInt(req.params.id);
+    const updatedItem = { id: itemId, ...req.body };
 
-  const index = data.findIndex((item) => item.id === itemId);
-  if (index !== -1) {
-    data[index] = updatedItem;
-    writeData(data);
-    res.json(updatedItem);
-  } else {
-    res.status(404).json({ message: "Item no encontrado" });
+    const index = data.findIndex((item) => item.id === itemId);
+    if (index !== -1) {
+      data[index] = updatedItem;
+      writeData(data);
+      res.json(updatedItem);
+    } else {
+      res.status(404).json({ message: "Item no encontrado" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Ocurrió un error al obtener los items.", text: error });
   }
 });
 
 app.delete("/items/:id", (req, res) => {
-  const data = readData();
-  const itemId = parseInt(req.params.id);
-  const filteredData = data.filter((item) => item.id !== itemId);
+  try {
+    const data = readData();
+    const itemId = parseInt(req.params.id);
+    const filteredData = data.filter((item) => item.id !== itemId);
 
-  writeData(filteredData);
-  res.json({ message: "Item eliminado" });
+    writeData(filteredData);
+    res.json({ message: "Item eliminado" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Ocurrió un error al obtener los items.", text: error });
+  }
 });
 
 app.listen(PORT, () => {
