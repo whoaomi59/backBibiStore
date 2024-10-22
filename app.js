@@ -19,8 +19,14 @@ const writeData = (data) => {
 
 // Rutas CRUD
 app.get("/", (req, res) => {
-  const data = readData();
-  res.json(data);
+  try {
+    const data = readData();
+    res.json(data);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Ocurrió un error al obtener los items.", text: error });
+  }
 });
 
 app.post("/items", (req, res) => {
