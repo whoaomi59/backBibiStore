@@ -54,18 +54,22 @@ app.get("/items", (req, res) => {
 
 // Ruta para agregar un nuevo item
 app.post("/items", (req, res) => {
-  const { name } = req.body;
-  const query = "INSERT INTO items (name) VALUES (?)";
+  const { nombre, img, precio, imgone, imgtwo, imgtree } = req.body;
+  const query = `INSERT INTO Productos (nombre,img,precio,imgone,imgtwo,imgtree) VALUES (?)`;
 
-  connection.query(query, [name], (err, result) => {
-    if (err) {
-      console.error("Error al agregar item:", err);
-      return res
-        .status(500)
-        .json({ message: "Ocurrió un error al agregar el item." });
+  connection.query(
+    query,
+    [nombre, img, precio, imgone, imgtwo, imgtree],
+    (err, result) => {
+      if (err) {
+        console.error("Error al agregar item:", err);
+        return res
+          .status(500)
+          .json({ message: "Ocurrió un error al agregar el item." });
+      }
+      res.status(201).json({ id: result.insertId, name });
     }
-    res.status(201).json({ id: result.insertId, name });
-  });
+  );
 });
 
 // Iniciar el servidor
