@@ -35,7 +35,7 @@ app.get("/items", (req, res) => {
       console.error("Error al obtener los items:", err);
       return res
         .status(500)
-        .json({ message: "Ocurrió un error al obtener los items." });
+        .json({ message: "Ocurrió un error al obtener los items.", text: err });
     }
     res.status(200).json(results);
   });
