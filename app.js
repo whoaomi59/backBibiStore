@@ -20,7 +20,7 @@ const writeData = (data) => {
 };
 
 // Rutas CRUD
-app.get("/", (req, res) => {
+app.get("/items", (req, res) => {
   try {
     const data = readData();
     res.json(data);
