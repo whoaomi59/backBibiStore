@@ -9,7 +9,7 @@ app.use(express.json());
 
 // Leer y escribir en archivo JSON
 const readData = () => {
-  const data = fs.readFileSync("./data.json");
+  const data = fs.readFileSync("data.json");
   return JSON.parse(data);
 };
 
