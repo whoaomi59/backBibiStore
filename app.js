@@ -3,13 +3,15 @@ const cors = require("cors"); // Importa cors
 const fs = require("fs");
 const app = express();
 const PORT = 5000;
+const path = require("path");
 
 app.use(cors()); // Usa cors para evitar el error
 app.use(express.json());
 
 // Leer y escribir en archivo JSON
 const readData = () => {
-  const data = fs.readFileSync("./data.json", "utf8");
+  const dataPath = path.join(__dirname, "data.json"); // Cambia aquí
+  const data = fs.readFileSync(dataPath, "utf8");
   return JSON.parse(data);
 };
 
