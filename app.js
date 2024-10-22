@@ -16,6 +16,9 @@ const readData = () => {
 const writeData = (data) => {
   fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
 };
+app.get("/", (req, res) => {
+  res.send("Backend funcionando en Vercel");
+});
 
 // Rutas CRUD
 app.get("/items", (req, res) => {
