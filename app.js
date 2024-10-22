@@ -19,11 +19,13 @@ const writeData = (data) => {
   try {
     const dataPath = path.join(__dirname, "data.json");
     fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+    console.log("Datos escritos correctamente en data.json");
   } catch (error) {
     console.error("Error al escribir el archivo:", error);
     throw error; // Lanza el error para que se maneje en la llamada
   }
 };
+
 // Rutas CRUD
 app.get("/items", (req, res) => {
   try {
