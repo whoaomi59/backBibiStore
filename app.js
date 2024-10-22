@@ -31,15 +31,23 @@ app.get("/items", (req, res) => {
   const query = "SELECT * FROM Productos";
 
   connection.query(query, (err, results) => {
+    if (err) {
+      // Maneja el error que ocurre en la consulta SQL
+      return res.status(500).json({
+        message: "Ocurrió un error al obtener los items.",
+        error: err.message, // Mostramos el mensaje de error.
+      });
+    }
+
+    // Si la consulta se ejecuta sin errores
     try {
-      res.status(200).json(results);
+      res.status(200).json(results); // Devolvemos los resultados
     } catch (error) {
-      return res
-        .status(500)
-        .json({
-          message: "Ocurrió un error al obtener los items.",
-          text: error,
-        });
+      // Capturamos errores al intentar devolver la respuesta
+      return res.status(500).json({
+        message: "Ocurrió un error al procesar la respuesta.",
+        error: error.message, // Detallamos el error de la respuesta.
+      });
     }
   });
 });
