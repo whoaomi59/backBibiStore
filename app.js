@@ -1,84 +1,42 @@
 const express = require("express");
-const cors = require("cors"); // Importa cors
-const fs = require("fs");
-const app = express();
-const PORT = 5000;
-const path = require("path");
+const cors = require("cors");
 
-app.use(cors()); // Usa cors para evitar el error
+const app = express();
+const PORT = process.env.PORT || 3000; // Vercel usa su propio puerto
+
+app.use(cors());
 app.use(express.json());
 
-// Leer y escribir en archivo JSON
-const readData = () => {
-  const dataPath = path.join(__dirname, "data.json"); // Cambia aquí
-  const data = fs.readFileSync(dataPath, "utf8");
-  return JSON.parse(data);
-};
-
-const writeData = (data) => {
-  fs.writeFileSync("./data.json", JSON.stringify(data, null, 2));
-};
+// Simulando la lectura y escritura de un archivo
+let data = JSON.parse(process.env.DATA || "{}"); // Lee desde una variable de entorno
 
 // Rutas CRUD
 app.get("/items", (req, res) => {
-  try {
-    const data = readData();
-    res.json(data);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Ocurrió un error al obtener los items.", text: error });
-  }
+  res.json(data);
 });
 
 app.post("/items", (req, res) => {
-  try {
-    const data = readData();
-    const newItem = { id: Date.now(), ...req.body };
-    data.push(newItem);
-    writeData(data);
-    res.status(201).json(newItem);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Ocurrió un error al obtener los items.", text: error });
-  }
+  const newItem = { id: Date.now(), ...req.body };
+  data[newItem.id] = newItem;
+  res.status(201).json(newItem);
 });
 
 app.put("/items/:id", (req, res) => {
-  try {
-    const data = readData();
-    const itemId = parseInt(req.params.id);
-    const updatedItem = { id: itemId, ...req.body };
+  const itemId = parseInt(req.params.id);
+  const updatedItem = { id: itemId, ...req.body };
 
-    const index = data.findIndex((item) => item.id === itemId);
-    if (index !== -1) {
-      data[index] = updatedItem;
-      writeData(data);
-      res.json(updatedItem);
-    } else {
-      res.status(404).json({ message: "Item no encontrado" });
-    }
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Ocurrió un error al obtener los items.", text: error });
+  if (itemId in data) {
+    Object.assign(data[itemId], updatedItem);
+    res.json(updatedItem);
+  } else {
+    res.status(404).json({ message: "Item no encontrado" });
   }
 });
 
 app.delete("/items/:id", (req, res) => {
-  try {
-    const data = readData();
-    const itemId = parseInt(req.params.id);
-    const filteredData = data.filter((item) => item.id !== itemId);
-
-    writeData(filteredData);
-    res.json({ message: "Item eliminado" });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Ocurrió un error al obtener los items.", text: error });
-  }
+  const itemId = parseInt(req.params.id);
+  delete data[itemId];
+  res.json({ message: "Item eliminado" });
 });
 
 app.listen(PORT, () => {
