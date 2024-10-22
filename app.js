@@ -1,44 +1,63 @@
 const express = require("express");
+const mysql = require("mysql2");
 const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Vercel usa su propio puerto
+const PORT = 5000;
 
+// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Para analizar JSON en el cuerpo de las solicitudes
 
-// Simulando la lectura y escritura de un archivo
-let data = JSON.parse(process.env.DATA || "[]"); // Lee desde una variable de entorno
-
-// Rutas CRUD
-app.get("/items", (req, res) => {
-  res.json(data);
+// Conectar a MySQL
+const connection = mysql.createConnection({
+  host: "asuprocolombiasas.com", // Pon tu host
+  user: "sisottsa_hacker", // Tu usuario
+  password: "aAeewMH_WsgE", // Tu contraseña
+  database: "sisottsa_shopp", // Tu base de datos
 });
 
-app.post("/items", (req, res) => {
-  const newItem = { id: Date.now(), ...req.body };
-  data[newItem.id] = newItem;
-  res.status(201).json(newItem);
-});
-
-app.put("/items/:id", (req, res) => {
-  const itemId = parseInt(req.params.id);
-  const updatedItem = { id: itemId, ...req.body };
-
-  if (itemId in data) {
-    Object.assign(data[itemId], updatedItem);
-    res.json(updatedItem);
-  } else {
-    res.status(404).json({ message: "Item no encontrado" });
+// Verificar conexión
+connection.connect((err) => {
+  if (err) {
+    console.error("Error al conectar a la base de datos:", err);
+    return;
   }
+  console.log("Conectado a la base de datos MySQL");
 });
 
-app.delete("/items/:id", (req, res) => {
-  const itemId = parseInt(req.params.id);
-  delete data[itemId];
-  res.json({ message: "Item eliminado" });
+// Ruta para obtener items
+app.get("/items", (req, res) => {
+  const query = "SELECT * FROM Productos";
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error("Error al obtener los items:", err);
+      return res
+        .status(500)
+        .json({ message: "Ocurrió un error al obtener los items." });
+    }
+    res.status(200).json(results);
+  });
 });
 
+// Ruta para agregar un nuevo item
+app.post("/items", (req, res) => {
+  const { name } = req.body;
+  const query = "INSERT INTO items (name) VALUES (?)";
+
+  connection.query(query, [name], (err, result) => {
+    if (err) {
+      console.error("Error al agregar item:", err);
+      return res
+        .status(500)
+        .json({ message: "Ocurrió un error al agregar el item." });
+    }
+    res.status(201).json({ id: result.insertId, name });
+  });
+});
+
+// Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor en funcionamiento en http://localhost:${PORT}`);
 });
